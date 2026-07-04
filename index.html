@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>高松・東京の天気</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="topbar" aria-label="概要">
+        <div>
+          <p class="eyebrow">Weather Now</p>
+          <h1>高松と東京の天気</h1>
+        </div>
+        <button class="refresh-button" id="refreshButton" type="button" aria-label="最新の天気に更新">
+          <span aria-hidden="true">↻</span>
+          更新
+        </button>
+      </section>
+
+      <p class="status" id="status" role="status">天気を読み込んでいます...</p>
+
+      <section class="weather-grid" id="weatherGrid" aria-label="都市別の天気"></section>
+    </main>
+
+    <template id="weatherCardTemplate">
+      <article class="weather-card">
+        <div class="card-head">
+          <div>
+            <p class="prefecture"></p>
+            <h2></h2>
+          </div>
+          <div class="weather-icon" aria-hidden="true"></div>
+        </div>
+
+        <div class="temperature">
+          <span class="temperature-value"></span>
+          <span class="temperature-unit">°C</span>
+        </div>
+
+        <p class="description"></p>
+
+        <dl class="details">
+          <div>
+            <dt>今日の気温</dt>
+            <dd class="feels-like"></dd>
+          </div>
+          <div>
+            <dt>降水確率</dt>
+            <dd class="rain-probability"></dd>
+          </div>
+          <div>
+            <dt>明日の気温</dt>
+            <dd class="humidity"></dd>
+          </div>
+          <div>
+            <dt>風</dt>
+            <dd class="wind"></dd>
+          </div>
+        </dl>
+      </article>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>
