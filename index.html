@@ -19,31 +19,34 @@
     </div>
 
     <main class="app">
-      <section class="topbar" aria-label="概要">
+      <section class="topbar" aria-label="ヘッダー">
         <div>
           <p class="eyebrow">Weather Blast</p>
           <h1>住所から天気予報</h1>
         </div>
-        <button class="refresh-button" id="refreshButton" type="button" aria-label="最新の天気に更新">
+        <button class="refresh-button" id="refreshButton" type="button" aria-label="表示中の天気を更新">
           <span aria-hidden="true">↻</span>
           更新
         </button>
       </section>
 
-      <section class="search-panel" aria-label="郵便番号から住所と天気を検索">
+      <section class="search-panel" aria-label="郵便番号またはランダム住所で天気を検索">
         <form class="zip-form" id="zipForm">
           <label for="zipInput">郵便番号</label>
           <div class="zip-row">
             <input id="zipInput" name="zip" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="例: 7600017" maxlength="8">
-            <button class="search-button" type="submit">検索</button>
+            <div class="zip-actions">
+              <button class="search-button" type="submit">検索</button>
+              <button class="random-button" id="randomButton" type="button">ランダム住所</button>
+            </div>
           </div>
         </form>
-        <p class="address-result" id="addressResult">郵便番号を入力すると、住所とその地域の天気予報を表示します。</p>
+        <p class="address-result" id="addressResult">郵便番号を入力するか、ランダム住所で選んだ地点の天気を表示します。</p>
       </section>
 
-      <p class="status" id="status" role="status">天気を読み込んでいます...</p>
+      <p class="status" id="status" role="status">天気を読み込み中です...</p>
 
-      <section class="weather-grid" id="weatherGrid" aria-label="地域別の天気"></section>
+      <section class="weather-grid" id="weatherGrid" aria-label="地点ごとの天気"></section>
     </main>
 
     <template id="weatherCardTemplate">

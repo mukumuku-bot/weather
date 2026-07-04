@@ -178,14 +178,16 @@ h1 {
 }
 
 .refresh-button,
-.search-button {
+.search-button,
+.random-button {
   position: relative;
   isolation: isolate;
   overflow: hidden;
 }
 
 .refresh-button::before,
-.search-button::before {
+.search-button::before,
+.random-button::before {
   position: absolute;
   inset: -40%;
   z-index: -1;
@@ -219,7 +221,8 @@ h1 {
 }
 
 .refresh-button:hover,
-.search-button:hover {
+.search-button:hover,
+.random-button:hover {
   box-shadow: 0 20px 55px rgba(255, 61, 129, 0.35);
   transform: translateY(-3px) scale(1.04);
 }
@@ -267,6 +270,12 @@ h1 {
   gap: 10px;
 }
 
+.zip-actions {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 10px;
+}
+
 .zip-row input {
   min-height: 54px;
   width: 100%;
@@ -287,7 +296,8 @@ h1 {
   animation: inputPulse 0.75s ease-in-out infinite alternate;
 }
 
-.search-button {
+.search-button,
+.random-button {
   min-height: 54px;
   padding: 0 22px;
   border: 1px solid rgba(255, 255, 255, 0.35);
@@ -298,6 +308,17 @@ h1 {
   font-weight: 900;
   cursor: pointer;
   transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.random-button {
+  background: rgba(13, 35, 75, 0.62);
+  box-shadow: 0 14px 36px rgba(255, 159, 28, 0.22);
+}
+
+.search-button:disabled,
+.random-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
 }
 
 .address-result {
@@ -558,6 +579,10 @@ dd {
 
   .zip-row {
     grid-template-columns: 1fr;
+  }
+
+  .zip-actions {
+    grid-auto-flow: row;
   }
 
   .weather-card {

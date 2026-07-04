@@ -15,6 +15,29 @@ const defaultCities = [
   },
 ];
 
+const randomZipPool = [
+  "0600001",
+  "9800811",
+  "1000001",
+  "2310002",
+  "3800841",
+  "4200853",
+  "4500002",
+  "6008216",
+  "5300001",
+  "6500004",
+  "7000823",
+  "7300011",
+  "7600017",
+  "7900001",
+  "8100001",
+  "8500874",
+  "8600002",
+  "8800001",
+  "8920816",
+  "9000014",
+];
+
 const jmaByPrefCode = {
   "01": { officeCode: "016000" },
   "02": { officeCode: "020000" },
@@ -66,40 +89,35 @@ const jmaByPrefCode = {
 };
 
 const weatherIcons = new Map([
-  ["100", "☀️"], ["101", "🌤️"], ["102", "🌦️"], ["103", "🌦️"], ["104", "🌨️"],
-  ["110", "🌤️"], ["111", "🌤️"], ["112", "🌦️"], ["113", "🌦️"], ["114", "🌧️"],
-  ["115", "🌨️"], ["116", "🌨️"], ["117", "🌨️"], ["118", "🌧️"], ["119", "🌦️"],
-  ["120", "🌦️"], ["121", "🌦️"], ["122", "🌦️"], ["123", "🌤️"], ["124", "🌤️"],
-  ["125", "🌦️"], ["126", "🌦️"], ["127", "🌦️"], ["128", "🌦️"], ["130", "🌤️"],
-  ["131", "🌤️"], ["132", "🌤️"], ["140", "🌦️"], ["160", "🌨️"], ["170", "🌨️"],
-  ["181", "🌨️"], ["200", "☁️"], ["201", "⛅"], ["202", "🌦️"], ["203", "🌦️"],
-  ["204", "🌨️"], ["205", "🌨️"], ["206", "🌨️"], ["207", "🌨️"], ["208", "🌨️"],
-  ["209", "🌫️"], ["210", "⛅"], ["211", "⛅"], ["212", "🌦️"], ["213", "🌦️"],
-  ["214", "🌧️"], ["215", "🌨️"], ["216", "🌨️"], ["217", "🌨️"], ["218", "🌧️"],
-  ["219", "🌦️"], ["220", "🌦️"], ["221", "🌦️"], ["222", "🌦️"], ["223", "⛅"],
-  ["224", "🌦️"], ["225", "🌦️"], ["226", "🌦️"], ["227", "🌦️"], ["228", "🌨️"],
-  ["229", "🌨️"], ["230", "🌨️"], ["231", "☁️"], ["240", "⛈️"], ["250", "🌨️"],
-  ["260", "🌨️"], ["270", "🌨️"], ["281", "🌨️"], ["300", "🌧️"], ["301", "🌦️"],
-  ["302", "🌦️"], ["303", "🌨️"], ["304", "🌨️"], ["306", "🌧️"], ["308", "🌧️"],
-  ["309", "🌧️"], ["311", "🌦️"], ["313", "🌦️"], ["314", "🌧️"], ["315", "🌨️"],
-  ["316", "🌨️"], ["317", "🌨️"], ["320", "🌦️"], ["321", "🌦️"], ["322", "🌨️"],
-  ["323", "🌦️"], ["324", "🌦️"], ["325", "🌦️"], ["326", "🌨️"], ["327", "🌨️"],
-  ["328", "🌧️"], ["329", "🌧️"], ["340", "🌨️"], ["350", "🌧️"], ["361", "🌨️"],
-  ["371", "🌨️"], ["400", "🌨️"], ["401", "🌨️"], ["402", "🌨️"], ["403", "🌨️"],
-  ["405", "🌨️"], ["406", "🌨️"], ["407", "🌨️"], ["409", "🌨️"], ["411", "🌨️"],
-  ["413", "🌨️"], ["414", "🌨️"], ["420", "🌨️"], ["421", "🌨️"], ["422", "🌨️"],
-  ["423", "🌨️"], ["425", "🌨️"], ["426", "🌨️"], ["427", "🌨️"], ["450", "🌨️"],
+  ["100", "☀"],
+  ["101", "☀☁"],
+  ["102", "☀☂"],
+  ["104", "☀❄"],
+  ["200", "☁"],
+  ["201", "☁☀"],
+  ["202", "☁☂"],
+  ["204", "☁❄"],
+  ["300", "☂"],
+  ["301", "☂☀"],
+  ["302", "☂☁"],
+  ["303", "☂❄"],
+  ["400", "❄"],
+  ["401", "❄☀"],
+  ["402", "❄☁"],
+  ["403", "❄☂"],
 ]);
 
 const grid = document.querySelector("#weatherGrid");
 const statusText = document.querySelector("#status");
 const refreshButton = document.querySelector("#refreshButton");
+const randomButton = document.querySelector("#randomButton");
 const template = document.querySelector("#weatherCardTemplate");
 const zipForm = document.querySelector("#zipForm");
 const zipInput = document.querySelector("#zipInput");
 const addressResult = document.querySelector("#addressResult");
 
 let activeLocations = [...defaultCities];
+let lastRandomZip = "";
 
 function formatValue(value, suffix) {
   if (value === "" || value === null || value === undefined || Number.isNaN(Number(value))) {
@@ -109,8 +127,16 @@ function formatValue(value, suffix) {
   return `${Math.round(Number(value))}${suffix}`;
 }
 
-function weatherIcon(code) {
-  return weatherIcons.get(code) ?? "🌡️";
+function weatherIcon(code = "") {
+  if (weatherIcons.has(code)) {
+    return weatherIcons.get(code);
+  }
+
+  if (code.startsWith("1")) return "☀";
+  if (code.startsWith("2")) return "☁";
+  if (code.startsWith("3")) return "☂";
+  if (code.startsWith("4")) return "❄";
+  return "⛅";
 }
 
 function buildWeatherUrl(location) {
@@ -137,17 +163,19 @@ function temperatureRange(temps = []) {
 function findArea(areas, code) {
   if (code) {
     const exact = areas.find((item) => item.area.code === code);
-    if (exact) return exact;
+    if (exact) {
+      return exact;
+    }
   }
 
   return areas[0];
 }
 
-function buildLocationFromForecast(address) {
+function buildLocationFromAddress(address) {
   const office = jmaByPrefCode[address.prefcode];
 
   if (!office) {
-    throw new Error("この地域の天気予報に対応していません");
+    throw new Error("この住所の天気予報には対応していません。");
   }
 
   return {
@@ -158,15 +186,39 @@ function buildLocationFromForecast(address) {
   };
 }
 
+function formatZip(zip) {
+  return `${zip.slice(0, 3)}-${zip.slice(3)}`;
+}
+
+function setLoading(isLoading) {
+  refreshButton.disabled = isLoading;
+  randomButton.disabled = isLoading;
+}
+
+function pickRandomZip() {
+  if (randomZipPool.length === 1) {
+    lastRandomZip = randomZipPool[0];
+    return lastRandomZip;
+  }
+
+  let nextZip = lastRandomZip;
+  while (nextZip === lastRandomZip) {
+    nextZip = randomZipPool[Math.floor(Math.random() * randomZipPool.length)];
+  }
+
+  lastRandomZip = nextZip;
+  return nextZip;
+}
+
 async function lookupAddress(zip) {
   const response = await fetch(`https://zipcloud.ibsnet.co.jp/api/search?zipcode=${zip}`);
   if (!response.ok) {
-    throw new Error("住所を検索できませんでした");
+    throw new Error("住所の取得に失敗しました。");
   }
 
   const data = await response.json();
   if (data.status !== 200 || !data.results?.length) {
-    throw new Error("郵便番号に一致する住所が見つかりませんでした");
+    throw new Error("郵便番号に一致する住所が見つかりませんでした。");
   }
 
   return data.results[0];
@@ -175,7 +227,7 @@ async function lookupAddress(zip) {
 async function loadLocationWeather(location) {
   const response = await fetch(buildWeatherUrl(location));
   if (!response.ok) {
-    throw new Error(`${location.name}の天気を取得できませんでした`);
+    throw new Error(`${location.name}の天気を取得できませんでした。`);
   }
 
   const data = await response.json();
@@ -214,8 +266,8 @@ function renderCard(weather) {
 }
 
 async function refreshWeather() {
-  refreshButton.disabled = true;
-  statusText.textContent = "天気を読み込んでいます...";
+  setLoading(true);
+  statusText.textContent = "天気を読み込み中です...";
 
   try {
     const weatherList = await Promise.all(activeLocations.map(loadLocationWeather));
@@ -226,14 +278,14 @@ async function refreshWeather() {
     }).format(new Date());
     statusText.textContent = `${updatedAt} に更新しました`;
   } catch (error) {
-    statusText.textContent = "天気を読み込めませんでした。少し時間をおいて更新してください。";
+    statusText.textContent = "天気を読み込めませんでした。時間をおいて再度お試しください。";
     console.error(error);
   } finally {
-    refreshButton.disabled = false;
+    setLoading(false);
   }
 }
 
-async function searchByZip(zip) {
+async function searchByZip(zip, labelPrefix = "") {
   const normalizedZip = zip.replace(/\D/g, "");
 
   if (normalizedZip.length !== 7) {
@@ -241,23 +293,39 @@ async function searchByZip(zip) {
     return;
   }
 
+  setLoading(true);
   addressResult.textContent = "住所を検索しています...";
-  statusText.textContent = "天気を読み込んでいます...";
+  statusText.textContent = "天気を読み込み中です...";
 
   try {
     const address = await lookupAddress(normalizedZip);
-    const location = buildLocationFromForecast(address);
+    const location = buildLocationFromAddress(address);
     activeLocations = [location];
-    addressResult.textContent = `〒${normalizedZip.slice(0, 3)}-${normalizedZip.slice(3)} ${location.address}`;
-    await refreshWeather();
+    zipInput.value = formatZip(normalizedZip);
+    addressResult.textContent = `${labelPrefix}${formatZip(normalizedZip)} ${location.address}`;
+    const weatherList = await Promise.all(activeLocations.map(loadLocationWeather));
+    grid.replaceChildren(...weatherList.map(renderCard));
+    const updatedAt = new Intl.DateTimeFormat("ja-JP", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date());
+    statusText.textContent = `${updatedAt} に更新しました`;
   } catch (error) {
     addressResult.textContent = error.message;
-    statusText.textContent = "郵便番号を確認して、もう一度検索してください。";
+    statusText.textContent = "住所の検索に失敗しました。別の郵便番号でお試しください。";
     console.error(error);
+  } finally {
+    setLoading(false);
   }
 }
 
+async function showRandomLocation() {
+  const randomZip = pickRandomZip();
+  await searchByZip(randomZip, "ランダム: ");
+}
+
 refreshButton.addEventListener("click", refreshWeather);
+randomButton.addEventListener("click", showRandomLocation);
 zipInput.addEventListener("input", () => {
   const value = zipInput.value.replace(/\D/g, "").slice(0, 7);
   zipInput.value = value.length > 3 ? `${value.slice(0, 3)}-${value.slice(3)}` : value;
