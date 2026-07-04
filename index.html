@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>高松・東京の天気</title>
+    <title>住所から天気予報</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -11,7 +11,7 @@
       <section class="topbar" aria-label="概要">
         <div>
           <p class="eyebrow">Weather Now</p>
-          <h1>高松と東京の天気</h1>
+          <h1>住所から天気予報</h1>
         </div>
         <button class="refresh-button" id="refreshButton" type="button" aria-label="最新の天気に更新">
           <span aria-hidden="true">↻</span>
@@ -19,9 +19,20 @@
         </button>
       </section>
 
+      <section class="search-panel" aria-label="郵便番号から住所と天気を検索">
+        <form class="zip-form" id="zipForm">
+          <label for="zipInput">郵便番号</label>
+          <div class="zip-row">
+            <input id="zipInput" name="zip" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="例: 7600017" maxlength="8">
+            <button class="search-button" type="submit">検索</button>
+          </div>
+        </form>
+        <p class="address-result" id="addressResult">郵便番号を入力すると、住所とその地域の天気予報を表示します。</p>
+      </section>
+
       <p class="status" id="status" role="status">天気を読み込んでいます...</p>
 
-      <section class="weather-grid" id="weatherGrid" aria-label="都市別の天気"></section>
+      <section class="weather-grid" id="weatherGrid" aria-label="地域別の天気"></section>
     </main>
 
     <template id="weatherCardTemplate">
@@ -44,7 +55,7 @@
         <dl class="details">
           <div>
             <dt>今日の気温</dt>
-            <dd class="feels-like"></dd>
+            <dd class="today-temp"></dd>
           </div>
           <div>
             <dt>降水確率</dt>
@@ -52,7 +63,7 @@
           </div>
           <div>
             <dt>明日の気温</dt>
-            <dd class="humidity"></dd>
+            <dd class="tomorrow-temp"></dd>
           </div>
           <div>
             <dt>風</dt>
